@@ -1,0 +1,177 @@
+---
+title: "pr4"
+author: "Kim Min Jeong"
+date: "2017년 10월 12일"
+output: word_document
+---
+## Dataframe 
+# 1.벡터를 이용해 데이터 프레임 만들기
+ -   data.frame 함수를 사용하여 데이터프레임 만들기
+ -   stringAsFactors 인수 사용해서 데이터프레임 만들기
+```{r}
+name <- c("David","Tom","Ravindra","Alice","sobia")
+gender <- c("M","M","M","F","F")
+age <- c(19,25,31,40,31)
+marriage <- c(F,F,T,T,T)
+
+# stringAsFactors 인수 없이 만들기
+HR <- data.frame(name,gender,age,marriage)
+str(HR)
+# stringAsFactors=F 사용해서 만들기
+HR <- data.frame(name,gender,age,marriage, stringsAsFactors = F)
+str(HR)
+# dara.frame 함수와 관련된 다양한 함수 사용하기
+str(HR) #데이터프레임의 구조를 확인 
+names(HR) #데이터프레임의 열이름을 확인
+rownames(HR) #데이터프레임의 행이름을 확인 
+```
+
+#2.stringsAsFactors = F 인수를 사용하기
+```{r}
+HR <- data.frame(name,gender,age,marriage)
+str(HR)
+HR <- data.frame(name,gender,age,marriage, stringsAsFactors = F)
+str(HR)
+```
+
+#3. Data.Frame 변수명 바꾸기
+```{r}
+#colnames, rownames 함수로 변수명 변환 및 확인 
+colnames(HR)
+rownames(HR)
+colnames(HR) <- c("Emp_name","Emp_gend","Emp_age","Emp_mrg")
+rownames(HR) <- letters[1:5]
+HR
+```
+
+#4.Data.Frame 에 데이터추가
+```{r}
+#이름으로 추가
+HR$Emp_height <- c("180","170","171","165","155")
+HR["f",] <- list("tylor","M",50,T,"177")
+HR
+
+# cbind, rbind 로 추가
+HR <- cbind(HR,weight=c(80,70,65,48,55,100))
+HR <- rbind(HR,g=list("Merry","F",20,F,"170",60))
+HR <- rbind(HR,h=c("Merry","F",20,F,"170",60))
+HR 
+```
+
+#5.Data.Frame 에 데이터 삭제
+```{r}
+HR <- HR[,-5] #5번째 컬럼을 빼고 나머지만 다시 할당
+HR <- HR[-7,] #7번째 로우를 빼고 나머지만 다시 할당
+HR$weight <-NULL #Weight 컬럼 삭제
+```
+
+#6.Data 조건문을 활용해 조작하기
+```{r}
+# 이부분은 모든 코드에 주석달것!
+# $와 ㅣ연산자로 여러개의 조건을 사용할 수 있음
+HR[HR$Emp_gend=="M",]
+HR[HR$Emp_gend!="F",]
+nrow(HR[HR$Emp_gend=="M",]) #nrow는 행의 개수를 보여줌
+HR[HR$Emp_name=="David",c("Emp_age","Emp_mrg")]
+HR[HR$Emp_name=="Tom"| HR$Emp_name=="Ravindra",]
+HR[HR$Emp_gend=="M" & HR$Emp_age>24,]
+```
+
+#7. Dataframe 정렬하기
+```{r}
+#order 함수를 활용해 순서를 구하여, row 조건에 넣어서 정렬
+#decreasing=T 인수를 활용하여 오름차순, 내림차순 변경가능
+order(HR$Emp_age) #order 함수로 age에 대한 순서를 구함
+HR[order(HR$Emp_age),] #row의 조건에 위에서 구한 순서를 넣음
+order(HR$Emp_age, decreasing = T) #내림차순
+HR[order(HR$Emp_age, decreasing = T),] 
+```
+
+#8. Data frame 기타함수
+```{r}
+#head, tail 함수는 데이터 프레임이 상위, 하위 row를 출력함
+# 기본6개를 출력하며, row 수를 지정할 수 있음
+head(HR)  #상위6개 row
+head(HR, 2) #상위 2개 row
+tail(HR, 2) #하위 2개 row
+```
+
+## 파일 입출력
+#1. 내장데이터 불러오기
+```{r}
+#MASS 패키지에는 다양한 데이터가 들어있음
+#install.packages("MASS")
+library(MASS)
+#iris 데이터셋
+#불꽃의 종과 sepal 과 petal 의 너비와 길이에 대한 데이터
+head(iris)
+str(iris)
+#mtcars 데이터셋
+#자동치 치종별 상세스펙에 대한 데이터
+head(mtcars)
+str(mtcars)
+#USArrests 데이터셋
+# 1973년도 50개 주에서 수집된 범죄기록 데이터
+head(USArrests)
+str(USArrests)
+```
+
+#file로 저장된 데이터 불러오기
+```{r}
+#블랙보드에서 실습과제에 첨부되어있는 파일을 다운받아 사용할 것
+#setwd 함수로 해당 작업 폴더 지정해주기
+#set("c:/PR") #지정하지 않으면 내문서가 기본 작업폴더
+#read.csv()함수
+#header = T 
+#row.names = 1
+#sep = ","
+#na.strings = c("Na","nan")
+#fileEncoding = "UTF-8" 
+#encoding = "UTF-8"
+#stringsAsFactors = F
+#그냥 읽어 오기
+setwd("c:/PR")
+csv <- read.csv("read_csv.csv") ; csv
+str(csv)
+#header, stringsAsFactors 사용
+# 불러온 데이터가 어떻게 바뀌는지 확인해 보세요
+csv2 = read.csv("read_csv.csv", header = F, stringsAsFactors=F); csv2
+str(csv2)
+#결측값 처리하기
+#(".","N.A.","") 3가지문자를 모두 NA 로 인식하도록 함
+csv3 = read.csv("csv_NA.csv", header = F, stringsAsFactors = F,na.strings = c(".","N.A.","")) ; csv2
+str(csv3)
+#인코딩 문제 해결하기
+# 불러올 파일의 인코딩을 UTF-8 로 지정
+csv4 = read.csv("csv_NA.csv", header = F, stringsAsFactors = F,encoding = "UTF-8") ; csv4
+str(csv4)
+# read.table()함수
+# table 형태로 저장된 2차원의 데이터를 불러옴
+# txt 파일이나 csv 파일을 불러 올 수 있음
+# 불러온 데이터는 데이터 프레임으로 생성
+# read.csv()함수와 동일하게 인수를 사용
+table = read.table("read_csv.csv",header = F, sep = ",",  stringsAsFactors = F)
+table
+```
+
+#3.웹에서 데이터 읽어오기
+```{r}
+#웹에 있는 데이터를 바로 읽어 올 수도 있음
+store.df <- read.csv("http://goo.gl/QPDdMl")
+head(store.df,2)
+#웹에 있는 표를 읽어 오기 readHTMLTable()
+#install.packages("XML")
+library(XML)
+world_pop = readHTMLTable("http://www.worldometers.info/world-population/")
+head(world_pop[[1]])
+```
+
+#4. 데이터 저장하기
+```{r}
+#write.table 또는 write.csv 함수 사용
+#row.names=F는, 해당인수를 T로 줄 경우 행이름이 첫 열로 이동하여 저장되기 때문 
+table
+write.table(table,"PR_table.csv")
+write.table(table,"PR_table1.csv",row.names = F)
+write.csv(table,"PR_table2.csv",row.names = F)
+```
